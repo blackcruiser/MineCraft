@@ -2,9 +2,10 @@
 
 #include "PickupItem.h"
 
-#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/TextBlock.h"
 
-#include "Runtime/UMG/Public/Components/TextBlock.h"
+#include "MineCharacter.h"
 
 
 // Sets default values
@@ -21,6 +22,16 @@ void APickupItem::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	UClass *StartingWidgetClass = LoadClass<UUserWidget>(NULL, TEXT("Blueprint'/Game/InventorySystem/ItemName.ItemName_C'"));
+	if (StartingWidgetClass != nullptr)
+	{
+		_nameBoard = CreateWidget<UUserWidget>(GetWorld(), StartingWidgetClass);
+		if (_nameBoard != nullptr)
+		{
+			UTextBlock *text = Cast<UTextBlock>(_nameBoard->GetWidgetFromName(TEXT("NameLabel")));
+			text->SetText(_itemInfo.name);
+		}
+	}
 
 	OnActorBeginOverlap.AddDynamic(this, &APickupItem::OnBeginOverlap);
 	OnActorEndOverlap.AddDynamic(this, &APickupItem::OnEndOverlap);
@@ -54,12 +65,37 @@ void APickupItem::Tick(float DeltaTime)
 
 void APickupItem::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	ShowNameBoard();
+	AMineCharacter* character = Cast<AMineCharacter>(OtherActor);
+	if (nullptr != character)
+	{
+		ShowNameBoard();
+
+	}
 }
 
 void APickupItem::OnEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	HideNameBoard();
+	AMineCharacter* character = Cast<AMineCharacter>(OtherActor);
+	if (nullptr != character)
+	{
+		HideNameBoard();
+
+	}
+}
+
+void APickupItem::OnPickup()
+{
+	GetWorld()->DestroyActor(this);
+}
+
+const FNormalItemInfo& APickupItem::getItemInfo() const
+{
+	return _itemInfo;
+}
+
+const int APickupItem::getItemCount() const
+{
+	return _count;
 }
 
 void APickupItem::ShowNameBoard()
@@ -67,17 +103,7 @@ void APickupItem::ShowNameBoard()
 	if (nullptr != _nameBoard)
 		return;
 
-	UClass *StartingWidgetClass = LoadClass<UUserWidget>(NULL, TEXT("Blueprint'/Game/InventorySystem/ItemName.ItemName_C'"));
-	if (StartingWidgetClass != nullptr)
-	{
-		_nameBoard = CreateWidget<UUserWidget>(GetWorld(), StartingWidgetClass);
-		if (_nameBoard != nullptr)
-		{
-			_nameBoard->AddToViewport();
-			UTextBlock *text = Cast<UTextBlock>(_nameBoard->GetWidgetFromName(TEXT("NameLabel")));
-				text->SetText(_itemInfo.name);
-		}
-	}
+	_nameBoard->AddToViewport();
 }
 
 void APickupItem::HideNameBoard()
@@ -86,5 +112,4 @@ void APickupItem::HideNameBoard()
 		return;
 
 	_nameBoard->RemoveFromViewport();
-	_nameBoard = nullptr;
 }

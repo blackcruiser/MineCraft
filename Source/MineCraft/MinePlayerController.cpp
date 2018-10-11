@@ -3,6 +3,9 @@
 #include "MinePlayerController.h"
 #include "Blueprint/UserWidget.h"
 
+#include "MineCharacter.h"
+#include "InventorySystem/Actor/PickupItem.h"
+
 #include <algorithm>
 
 AMinePlayerController::AMinePlayerController()
@@ -56,4 +59,18 @@ void AMinePlayerController::UpdateHealth(int value)
 
 void AMinePlayerController::OnToggleInventoryShow()
 {
+}
+
+void AMinePlayerController::OnPickupItem()
+{
+	AMineCharacter* character = Cast<AMineCharacter>(GetCharacter());
+	if (character)
+	{
+		APickupItem* item = character->GetNearestPickupItem();
+		if (item)
+		{
+			_inventoryManager->AddItem(item->getItemInfo(), item->getItemCount());
+			item->OnPickup();
+		}
+	}
 }

@@ -36,6 +36,7 @@ public:
 
 	//Interaction
 	void OnToggleInventoryShow();
+	void OnPickupItem();
 	
 private:
 	UInventoryManager* _inventoryManager;

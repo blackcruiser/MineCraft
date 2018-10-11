@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include <GameFramework/Actor.h>
-#include <Runtime/UMG/Public/Blueprint/UserWidget.h>
+#include "GameFramework/Actor.h"
+#include "Blueprint/UserWidget.h"
 
 #include "InventorySystem/Info/NormalItemInfo.h"
 
@@ -35,12 +35,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
+	void OnPickup();
+
+	const FNormalItemInfo& getItemInfo() const;
+	const int getItemCount() const;
+
+protected:
 	virtual void ShowNameBoard();
 	virtual void HideNameBoard();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FNormalItemInfo _itemInfo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int _count;
 
 private:
 	UUserWidget* _nameBoard;

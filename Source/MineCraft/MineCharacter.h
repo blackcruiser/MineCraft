@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
 #include "MineCharacter.generated.h"
+
+class APickupItem;
 
 UCLASS()
 class MINECRAFT_API AMineCharacter : public ACharacter
@@ -28,6 +31,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	APickupItem* GetNearestPickupItem();
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -36,18 +40,18 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void EndOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
+	void AddNearByPickupItem(APickupItem* item);
+	void RemoveNearByPickupItem(APickupItem* item);
+
 	void onMoveForwardBackward(float value);
 	void onMoveLeftRight(float value);
 	void onYawChange(float value);
 	void onPitchChange(float value);
 
-	void onFire();
-
-	void OnPickup();
-
 public:
 	UFUNCTION(BlueprintCallable)
 	FRotator getAimOffsets() const;
 
-public:
+private:
+	TArray<APickupItem*> _nearbyItemSet;
 };

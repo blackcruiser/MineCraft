@@ -2,8 +2,10 @@
 
 #include "MineCharacter.h"
 
-#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include "Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+#include "InventorySystem/Actor/PickupItem.h"
 
 
 // Sets default values
@@ -62,19 +64,42 @@ void AMineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis("LeftRight", this, &AMineCharacter::onMoveLeftRight);
 	PlayerInputComponent->BindAxis("Yaw", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("Pitch", this, &APawn::AddControllerPitchInput);
+}
 
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMineCharacter::onFire);
+APickupItem* AMineCharacter::GetNearestPickupItem()
+{
+	APickupItem* item = _nearbyItemSet.Pop();
 
-	PlayerInputComponent->BindAction("Pickup", IE_Pressed, this, &AMineCharacter::OnPickup);
+	return item;
 }
 
 
 void AMineCharacter::BeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
+	APickupItem* item = Cast<APickupItem>(OtherActor);
+	if (item)
+	{
+		AddNearByPickupItem(item);
+	}
 }
 
 void AMineCharacter::EndOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
+	APickupItem* item = Cast<APickupItem>(OtherActor);
+	if (item)
+	{
+		RemoveNearByPickupItem(item);
+	}
+}
+
+void AMineCharacter::AddNearByPickupItem(APickupItem* item)
+{
+	_nearbyItemSet.Add(item);
+}
+
+void AMineCharacter::RemoveNearByPickupItem(APickupItem* item)
+{
+	_nearbyItemSet.Remove(item);
 }
 
 void AMineCharacter::onMoveForwardBackward(float value)
@@ -101,15 +126,6 @@ void AMineCharacter::onYawChange(float value)
 void AMineCharacter::onPitchChange(float value)
 {
 	AddControllerPitchInput(value * 1.0f);
-}
-
-void AMineCharacter::onFire()
-{
-}
-
-void AMineCharacter::OnPickup()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, "pickup");
 }
 
 FRotator AMineCharacter::getAimOffsets() const
