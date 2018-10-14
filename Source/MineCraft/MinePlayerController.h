@@ -8,6 +8,7 @@
 
 #include "MinePlayerController.generated.h"
 
+class UInventoryView;
 /**
  * 
  */
@@ -42,6 +43,7 @@ private:
 	UInventoryManager* _inventoryManager;
 	
 	UUserWidget* _mainHUD;
+	UInventoryView* _inventoryView;
 
 	int _health, _maxHealth;
 	int _mana, _maxMana;

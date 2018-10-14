@@ -9,6 +9,8 @@
 
 #include "InventoryManager.generated.h"
 
+
+DECLARE_MULTICAST_DELEGATE_OneParam(InventorySlotChangeDelegate, int)
 /**
  * 
  */
@@ -21,11 +23,18 @@ public:
 	UInventoryManager();
 	~UInventoryManager();
 
-	bool IsSlotEmpty(int index);
-
 	void AddItem(const FNormalItemInfo& info, int count);
 
-	const TArray<FInventorySlotInfo>& GetInventoryArray();
+	int GetSlotVolume() const;
+
+	bool IsSlotEmpty(int index);
+
+	const TArray<FInventorySlotInfo>& GetInventoryInfoArray();
+	const FInventorySlotInfo& GetInventoryInfoAtIndex(int index) const;
+
+
+public:
+	InventorySlotChangeDelegate inventorySlotChangeDelegate;
 
 private:
 	TArray<FInventorySlotInfo> _slotInfoArray;

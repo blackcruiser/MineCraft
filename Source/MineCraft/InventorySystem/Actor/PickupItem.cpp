@@ -25,7 +25,7 @@ void APickupItem::BeginPlay()
 	UClass *StartingWidgetClass = LoadClass<UUserWidget>(NULL, TEXT("Blueprint'/Game/InventorySystem/ItemName.ItemName_C'"));
 	if (StartingWidgetClass != nullptr)
 	{
-		_nameBoard = CreateWidget<UUserWidget>(GetWorld(), StartingWidgetClass);
+		_nameBoard = CreateWidget<UUserWidget>(GetWorld()->GetFirstPlayerController(), StartingWidgetClass);
 		if (_nameBoard != nullptr)
 		{
 			UTextBlock *text = Cast<UTextBlock>(_nameBoard->GetWidgetFromName(TEXT("NameLabel")));
@@ -33,14 +33,21 @@ void APickupItem::BeginPlay()
 		}
 	}
 
-	OnActorBeginOverlap.AddDynamic(this, &APickupItem::OnBeginOverlap);
-	OnActorEndOverlap.AddDynamic(this, &APickupItem::OnEndOverlap);
+	sphereCollider = FindComponentByClass<USphereComponent>();
+	if (sphereCollider)
+	{
+		sphereCollider->OnComponentBeginOverlap.AddDynamic(this, &APickupItem::OnBeginOverlap);
+		sphereCollider->OnComponentEndOverlap.AddDynamic(this, &APickupItem::OnEndOverlap);
+	}
 }
 
 void APickupItem::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	OnActorBeginOverlap.RemoveAll(this);
-	OnActorEndOverlap.RemoveAll(this);
+	if (sphereCollider)
+	{
+		sphereCollider->OnComponentBeginOverlap.RemoveAll(this);
+		sphereCollider->OnComponentEndOverlap.RemoveAll(this);
+	}
 
 	Super::EndPlay(EndPlayReason);
 }
@@ -63,7 +70,7 @@ void APickupItem::Tick(float DeltaTime)
 	}
 }
 
-void APickupItem::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+void APickupItem::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AMineCharacter* character = Cast<AMineCharacter>(OtherActor);
 	if (nullptr != character)
@@ -73,7 +80,7 @@ void APickupItem::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 	}
 }
 
-void APickupItem::OnEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
+void APickupItem::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	AMineCharacter* character = Cast<AMineCharacter>(OtherActor);
 	if (nullptr != character)

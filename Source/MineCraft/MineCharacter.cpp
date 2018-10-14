@@ -68,6 +68,9 @@ void AMineCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 APickupItem* AMineCharacter::GetNearestPickupItem()
 {
+	if (0 == _nearbyItemSet.Num())
+		return nullptr;
+
 	APickupItem* item = _nearbyItemSet.Pop();
 
 	return item;

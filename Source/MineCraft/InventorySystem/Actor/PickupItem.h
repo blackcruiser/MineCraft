@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/SphereComponent.h"
 #include "Blueprint/UserWidget.h"
 
 #include "InventorySystem/Info/NormalItemInfo.h"
@@ -30,10 +31,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	void OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION(BlueprintCallable)
-	void OnEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
+	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	void OnPickup();
 
@@ -45,12 +46,17 @@ protected:
 	virtual void HideNameBoard();
 
 public:
+	UPROPERTY(BlueprintReadOnly)
+	USphereComponent* sphereCollider;
+
+private:
+	UUserWidget* _nameBoard;
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FNormalItemInfo _itemInfo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int _count;
 
-private:
-	UUserWidget* _nameBoard;
 };

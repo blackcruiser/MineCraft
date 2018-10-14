@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/GridPanel.h"
+#include "Components/UniformGridPanel.h"
 #include "InventoryView.generated.h"
 
+class UInventoryManager;
 /**
  * 
  */
@@ -20,10 +21,16 @@ public:
 
 protected:
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 
-	void UpdateInventory();
+	void RefreshAllSlotsView();
+	void RefreshSlotViewAtIndex(int index);
 	
 public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UGridPanel* SlotContainer;
+	UUniformGridPanel* slotContainer;
+
+private:
+	UInventoryManager* _inventoryManager;
+	FDelegateHandle _refreshSlotViewAtIndexHandle;
 };

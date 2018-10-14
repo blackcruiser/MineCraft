@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Blueprint/IUserObjectListEntry.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "InventorySlot.generated.h"
@@ -13,7 +12,7 @@
  * 
  */
 UCLASS()
-class MINECRAFT_API UInventorySlot : public UUserWidget, public IUserObjectListEntry
+class MINECRAFT_API UInventorySlot : public UUserWidget
 {
 	GENERATED_BODY()
 	
@@ -23,8 +22,8 @@ protected:
 
 public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UTextBlock* _itemName;
+	UTextBlock* itemName;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	UImage* _itemImage;
+	UImage* itemImage;
 };

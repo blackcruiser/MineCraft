@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "NormalItemInfo.h"
 #include "InventorySlotInfo.generated.h"
 
 /**
@@ -14,7 +15,7 @@ struct FInventorySlotInfo
 
 public:
 	UPROPERTY(EditAnywhere)
-	UClass* itemClass;
+	FNormalItemInfo itemInfo;
 
 	UPROPERTY(EditAnywhere)
 	int count = 0;

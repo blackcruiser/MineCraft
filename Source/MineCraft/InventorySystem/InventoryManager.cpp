@@ -2,7 +2,8 @@
 
 #include "InventoryManager.h"
 
-UInventoryManager::UInventoryManager()
+UInventoryManager::UInventoryManager() :
+	_slotVolume(100)
 {
 	_slotInfoArray.Init(FInventorySlotInfo(), _slotVolume);
 }
@@ -11,26 +12,40 @@ UInventoryManager::~UInventoryManager()
 {
 }
 
-bool UInventoryManager::IsSlotEmpty(int index)
-{
-	return false;
-}
 
 void UInventoryManager::AddItem(const FNormalItemInfo& info, int count)
 {
-	for (FInventorySlotInfo& info : _slotInfoArray)
+	for (int i = 0; i < _slotInfoArray.Num(); i++)
 	{
-		if (info.count == 0)
-		{
-			info.count = count;
-			info.itemClass = info.itemClass;
+		FInventorySlotInfo& slotInfo = _slotInfoArray[i];
 
+		if (slotInfo.count == 0)
+		{
+			slotInfo.itemInfo = info;
+			slotInfo.count = count;
+
+			inventorySlotChangeDelegate.Broadcast(i);
 			break;
 		}
 	}
 }
 
-const TArray<FInventorySlotInfo>& UInventoryManager::GetInventoryArray()
+int UInventoryManager::GetSlotVolume() const
+{
+	return _slotVolume;
+}
+
+bool UInventoryManager::IsSlotEmpty(int index)
+{
+	return false;
+}
+
+const TArray<FInventorySlotInfo>& UInventoryManager::GetInventoryInfoArray()
 {
 	return _slotInfoArray;
+}
+
+const FInventorySlotInfo& UInventoryManager::GetInventoryInfoAtIndex(int index) const
+{
+	return _slotInfoArray[index];
 }
