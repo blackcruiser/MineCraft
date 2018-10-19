@@ -31,6 +31,7 @@ void APickupItem::BeginPlay()
 			UTextBlock *text = Cast<UTextBlock>(_nameBoard->GetWidgetFromName(TEXT("NameLabel")));
 			text->SetText(_itemInfo.name);
 		}
+		_nameBoard->AddToRoot();
 	}
 
 	sphereCollider = FindComponentByClass<USphereComponent>();
@@ -49,6 +50,9 @@ void APickupItem::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		sphereCollider->OnComponentEndOverlap.RemoveAll(this);
 	}
 
+	if (_nameBoard)
+		_nameBoard->RemoveFromRoot();
+
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -57,7 +61,7 @@ void APickupItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (_nameBoard)
+	if (_nameBoard && _nameBoard->GetParent())
 	{
 		FVector loc = GetActorLocation();
 		APlayerController *playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -86,7 +90,6 @@ void APickupItem::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (nullptr != character)
 	{
 		HideNameBoard();
-
 	}
 }
 
@@ -107,7 +110,7 @@ const int APickupItem::getItemCount() const
 
 void APickupItem::ShowNameBoard()
 {
-	if (nullptr != _nameBoard)
+	if (nullptr == _nameBoard)
 		return;
 
 	_nameBoard->AddToViewport();

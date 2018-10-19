@@ -2,6 +2,7 @@
 
 #include "InventoryView.h"
 #include "Components/UniformGridSlot.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "MinePlayerController.h"
 #include "InventorySystem/InventoryManager.h"
 #include "InventorySystem/UI/InventorySlot.h"
@@ -53,6 +54,27 @@ void UInventoryView::NativeDestruct()
 	_inventoryManager = nullptr;
 
 	Super::NativeDestruct();
+}
+
+FReply UInventoryView::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	UFunction* function = this->FindFunction("OnMouseButtonDown");
+	if (function && function->IsInBlueprint())
+		return OnMouseButtonDown(InGeometry, InMouseEvent).NativeReply;
+	else
+	{
+		return UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton).NativeReply;
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "NativeOnMouseButtonDown");
+	}
+}
+
+void UInventoryView::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
+{
+	OutOperation = NewObject<UDragDropOperation>();
+	OutOperation->DefaultDragVisual = this;
+	OutOperation->Pivot = EDragPivot::MouseDown;
+
+	this->RemoveFromParent();
 }
 
 void UInventoryView::RefreshAllSlotsView()

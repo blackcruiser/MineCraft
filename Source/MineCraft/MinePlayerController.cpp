@@ -70,9 +70,15 @@ void AMinePlayerController::OnToggleInventoryShow()
 		return;
 
 	if (_inventoryView->GetVisibility() == ESlateVisibility::Visible)
+	{
 		_inventoryView->SetVisibility(ESlateVisibility::Collapsed);
+		bShowMouseCursor = false;
+	}
 	else
+	{
 		_inventoryView->SetVisibility(ESlateVisibility::Visible);
+		bShowMouseCursor = true;
+	}
 }
 
 void AMinePlayerController::OnPickupItem()
